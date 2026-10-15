@@ -1,0 +1,269 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Site Check design system
+   --------------------------------------------------------------------------
+   Direction: warm paper + ink, editorial type, instrument-panel details.
+   Deliberately not the default "developer dashboard" look: no pure white, no
+   cool greys, no rounded-everything. Colour comes from one committed accent
+   that switches with the report mode.
+   ========================================================================== */
+
+@theme {
+  /* Type */
+  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+  --font-serif: var(--font-instrument), Georgia, "Times New Roman", serif;
+
+  /* Paper + ink. Warm, low contrast, easy on the eye. */
+  --color-paper: #f2eee6;
+  --color-paper-2: #fbf9f4;
+  --color-paper-3: #eae4d8;
+  --color-ink: #17140f;
+  --color-ink-soft: #4b453b;
+  --color-ink-faint: #8b8274;
+  --color-line: #ddd5c7;
+  --color-line-strong: #c6bcaa;
+
+  /* Signal colours, used only for trust findings. */
+  --color-signal-good: #14663f;
+  --color-signal-warn: #8a5300;
+  --color-signal-bad: #a8271b;
+
+  /* Motion. Springy, never linear. */
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-rise: rise 0.7s var(--ease-spring) both;
+  --animate-fade-in: fade-in 0.5s var(--ease-out-soft) both;
+  --animate-scale-in: scale-in 0.6s var(--ease-spring) both;
+  --animate-marquee: marquee 32s linear infinite;
+  --animate-scan: scan 2.4s var(--ease-out-soft) infinite;
+  --animate-sheen: sheen 3.2s ease-in-out infinite;
+  --animate-orbit: orbit 9s linear infinite;
+  --animate-pulse-dot: pulse-dot 2s ease-in-out infinite;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.82);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes scan {
+    0% {
+      transform: translateY(-110%);
+      opacity: 0;
+    }
+    12% {
+      opacity: 1;
+    }
+    88% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(110%);
+      opacity: 0;
+    }
+  }
+
+  @keyframes sheen {
+    0% {
+      transform: translateX(-120%) skewX(-18deg);
+    }
+    55%,
+    100% {
+      transform: translateX(240%) skewX(-18deg);
+    }
+  }
+
+  @keyframes orbit {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes pulse-dot {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.35;
+      transform: scale(0.7);
+    }
+  }
+}
+
+/* ---------------------------------------------------------------- base ---- */
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  /* A barely-there dot field, so the page has depth instead of flat colour. */
+  background-image: radial-gradient(var(--color-line) 0.5px, transparent 0.5px);
+  background-size: 22px 22px;
+  background-position: -11px -11px;
+}
+
+/* Film grain over everything. Sits above the page, never in front of clicks. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.16;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* A soft accent glow that follows the pointer. */
+.pointer-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  width: 34rem;
+  height: 34rem;
+  margin: -17rem 0 0 -17rem;
+  border-radius: 9999px;
+  pointer-events: none;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 62%);
+  opacity: 0.16;
+  filter: blur(38px);
+  transition: opacity 0.5s ease;
+}
+
+/* A ring that trails the pointer and grows over anything clickable. */
+.pointer-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 91;
+  pointer-events: none;
+  height: 26px;
+  width: 26px;
+  margin: -13px 0 0 -13px;
+  border-radius: 9999px;
+  border: 1.5px solid var(--accent);
+  transition:
+    width 0.25s var(--ease-spring),
+    height 0.25s var(--ease-spring),
+    margin 0.25s var(--ease-spring),
+    background-color 0.25s ease,
+    opacity 0.3s ease;
+}
+
+.pointer-ring[data-hover="true"] {
+  height: 54px;
+  width: 54px;
+  margin: -27px 0 0 -27px;
+  background-color: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+/* Halftone corners, used on the paper cards. */
+.corner-ticks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)),
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)),
+    linear-gradient(var(--color-line-strong), var(--color-line-strong)),
+    linear-gradient(var(--color-line-strong), var(--color-line-strong));
+  background-size:
+    1px 9px, 9px 1px,
+    1px 9px, 9px 1px;
+  background-position:
+    0 0, 0 0,
+    100% 100%, 100% 100%;
+  background-repeat: no-repeat;
+}
+
+/* A hairline rule with a dot at each end. */
+.rule-dotted {
+  background-image: linear-gradient(90deg, var(--color-line-strong) 45%, transparent 0);
+  background-size: 9px 1px;
+  background-repeat: repeat-x;
+}
+
+.marquee-mask {
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.tilt-3d {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Honour visitors who ask for less movement. Everything still works, it just
+   stops moving. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .pointer-glow,
+  .pointer-ring {
+    display: none;
+  }
+}
